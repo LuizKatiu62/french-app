@@ -311,6 +311,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="res-list"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 // ─── DATA ──────────────────────────────────────────────────────────────────
 
@@ -573,6 +576,66 @@ function saveState(){
       known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay
     }));
   } catch(e){}
+  pushToFirebase();
+}
+
+// ─── FIREBASE SYNC ──────────────────────────────────────────────────────────
+
+var _FB_SEC = 'lk62-french-prog';
+var _fbRef = null;
+var _fbReady = false;
+
+function initFirebase(){
+  try {
+    var cfg = {
+      apiKey:'AIzaSyB0hO4m0XPRqmrYegHtkV4KawJA2py1glU',
+      authDomain:'gastos-casa-7f431.firebaseapp.com',
+      databaseURL:'https://gastos-casa-7f431-default-rtdb.firebaseio.com'
+    };
+    var app = firebase.initializeApp(cfg, 'french');
+    firebase.auth(app).signInAnonymously().then(function(){
+      _fbRef = firebase.database(app).ref('french-app/'+_FB_SEC+'/progress');
+      _fbRef.once('value').then(function(snap){
+        var d = snap.val();
+        if(d){
+          if(d.known) Object.assign(_known, d.known);
+          if(d.exprSeen) Object.assign(_exprSeen, d.exprSeen);
+          if(d.streak && d.streak > _streak) _streak = d.streak;
+          if(d.lastDay) _lastDay = d.lastDay;
+          try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay})); } catch(e){}
+          updateStats();
+          refreshCardCounter();
+        }
+        _fbReady = true;
+        _fbRef.on('value', function(snap){
+          var d = snap.val();
+          if(!d || !_fbReady) return;
+          var changed = false;
+          if(d.known){ Object.keys(d.known).forEach(function(k){ if(_known[k]!==d.known[k]){ _known[k]=d.known[k]; changed=true; } }); }
+          if(d.exprSeen){ Object.keys(d.exprSeen).forEach(function(k){ if(!_exprSeen[k]){ _exprSeen[k]=true; changed=true; } }); }
+          if(d.streak && d.streak > _streak){ _streak=d.streak; changed=true; }
+          if(changed){
+            try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay})); } catch(e){}
+            updateStats();
+            refreshCardCounter();
+          }
+        });
+      });
+    }).catch(function(e){ console.warn('fb auth:', e); });
+  } catch(e){ console.warn('fb init:', e); }
+}
+
+function pushToFirebase(){
+  if(!_fbReady || !_fbRef) return;
+  _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay}).catch(function(){});
+}
+
+function refreshCardCounter(){
+  var theme = THEMES[_curTheme];
+  if(!theme) return;
+  var id = _curTheme+'_'+_curCard;
+  var counter = document.getElementById('fc-counter');
+  if(counter) counter.textContent = 'Palavra '+(_curCard+1)+' de '+theme.words.length+((_known[id])?' ✅':'');
 }
 
 // ─── TTS ────────────────────────────────────────────────────────────────────
@@ -847,6 +910,7 @@ function buildGrammar(){
 
 (function(){
   initTTS();
+  initFirebase();
   loadDaily();
   updateStats();
   buildThemes();
