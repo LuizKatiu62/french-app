@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mon Français</title>
+<style>
+:root{--blue:#002395;--blue2:#0038b8;--red:#ED2939;--green:#059669;--green2:#047857;--bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--shadow:0 1px 8px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+/* TAB BAR */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.07)}
+.tab{flex:1;padding:9px 4px 8px;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);font-family:inherit;transition:color .15s}
+.tab.active{color:var(--blue)}
+.tab-ico{font-size:21px;display:block;line-height:1}
+.tab-lbl{font-size:9px;font-weight:700;margin-top:3px;letter-spacing:.3px;text-transform:uppercase}
+/* SECTIONS */
+.sec{display:none;padding:0 0 16px}
+.sec.active{display:block}
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 20px}
+.hdr-title{font-size:24px;font-weight:900;letter-spacing:-.5px}
+.hdr-sub{font-size:12px;opacity:.7;margin-top:2px}
+.hdr-flag{font-size:20px;float:right;margin-top:-2px}
+/* CARDS */
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin:0 16px 12px;padding:16px}
+.card-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+/* DAILY CARD */
+.daily{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-radius:20px;margin:16px 16px 12px;padding:20px}
+.daily-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:10px}
+.daily-fr{font-size:26px;font-weight:900;line-height:1.15;margin-bottom:4px}
+.daily-ipa{font-size:13px;opacity:.7;margin-bottom:10px;font-style:italic}
+.daily-pt{font-size:17px;font-weight:700;margin-bottom:8px}
+.daily-ctx{font-size:12px;opacity:.75;border-left:3px solid rgba(255,255,255,.3);padding-left:10px;line-height:1.5}
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 16px 12px}
+.stat{background:var(--card);border-radius:14px;padding:14px 8px;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow)}
+.stat-val{font-size:26px;font-weight:900;color:var(--blue);line-height:1}
+.stat-lbl{font-size:9px;font-weight:700;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+/* PROGRESS */
+.prog-wrap{margin:0 16px 12px}
+.prog-bar{height:7px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin:6px 0 3px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#3b82f6);border-radius:4px;transition:width .4s}
+.prog-lbl{font-size:11px;font-weight:700;color:var(--muted)}
+/* PHASE PILLS */
+.phases{display:flex;flex-direction:column;gap:8px;margin:0 16px 12px}
+.phase{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:12px}
+.phase-ico{font-size:26px;flex-shrink:0}
+.phase-info{flex:1}
+.phase-title{font-size:13px;font-weight:800}
+.phase-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.phase-badge{background:#e0f2fe;color:#0369a1;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:800;white-space:nowrap}
+/* THEMES GRID */
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 16px 12px}
+.theme-btn{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-family:inherit;transition:all .15s}
+.theme-btn.active{border-color:var(--blue);background:#eff6ff}
+.theme-ico{font-size:26px;display:block;margin-bottom:4px}
+.theme-lbl{font-size:11px;font-weight:700;color:var(--text)}
+.theme-btn.active .theme-lbl{color:var(--blue)}
+/* FLASHCARD */
+.fc-area{margin:0 16px 12px}
+.fc-counter{font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px;font-weight:600}
+.fc-wrap{perspective:1000px;height:190px;cursor:pointer;margin-bottom:12px;-webkit-tap-highlight-color:transparent}
+.fc{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s}
+.fc.flipped{transform:rotateY(180deg)}
+.fc-f,.fc-b{position:absolute;inset:0;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.fc-f{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
+.fc-b{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;transform:rotateY(180deg)}
+.fc-word{font-size:30px;font-weight:900;margin-bottom:6px}
+.fc-ipa{font-size:14px;opacity:.75;margin-bottom:8px}
+.fc-hint{font-size:12px;opacity:.55}
+.fc-translation{font-size:24px;font-weight:900;margin-bottom:8px}
+.fc-example{font-size:12px;opacity:.85;font-style:italic;line-height:1.5}
+.fc-actions{display:flex;gap:10px;margin-bottom:10px}
+.btn-knew{flex:1;background:#dcfce7;color:#15803d;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-review{flex:1;background:#fee2e2;color:#dc2626;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-next{width:100%;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px}
+/* EXPRESSIONS */
+.exp-card{background:var(--card);border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);padding:14px;margin:0 16px 10px}
+.exp-fr{font-size:17px;font-weight:900;color:var(--blue);margin-bottom:2px}
+.exp-ipa{font-size:11px;color:var(--muted);margin-bottom:6px;font-style:italic}
+.exp-tag{display:inline-block;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:800;margin-bottom:6px}
+.exp-tag.qc{background:#fff3e0;color:#e65100}
+.exp-tag.fr{background:#e8eaf6;color:#3949ab}
+.exp-tag.both{background:#f0fdf4;color:#166534}
+.exp-pt{font-size:13px;font-weight:700;margin-bottom:5px}
+.exp-ctx{font-size:12px;color:var(--muted);font-style:italic;border-left:3px solid #fde68a;padding-left:8px;line-height:1.5}
+/* PRONUNCIATION */
+.sound-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:14px;margin:0 16px 10px}
+.sound-hdr{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.sound-symbol{font-size:28px;font-weight:900;color:var(--blue);line-height:1;font-family:monospace}
+.sound-ipa{font-size:13px;color:var(--muted)}
+.sound-desc{font-size:13px;line-height:1.6;margin-bottom:8px}
+.sound-exs{display:flex;flex-wrap:wrap;gap:6px}
+.sound-ex{background:#eff6ff;color:var(--blue);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700}
+.tip-card{background:#fff9c4;border:1px solid #fde68a;border-radius:12px;padding:12px 14px;margin:0 16px 10px;font-size:12px;line-height:1.6}
+.tip-card strong{color:#92400e}
+/* FALSE COGNATES */
+.false-card{background:var(--card);border-radius:12px;border-left:4px solid var(--red);padding:12px 14px;margin:0 16px 8px}
+.false-fr{font-size:16px;font-weight:900;color:var(--red);margin-bottom:4px}
+.false-row{display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:2px}
+.false-wrong{color:var(--muted);text-decoration:line-through}
+.false-right{color:var(--green);font-weight:700}
+/* GRAMMAR */
+.gram-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:14px;margin:0 16px 10px}
+.gram-title{font-size:14px;font-weight:800;margin-bottom:10px;color:var(--text)}
+.gram-table{width:100%;border-collapse:collapse;font-size:12px}
+.gram-table th{background:#f8fafc;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.gram-table td{padding:7px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.gram-table tr:last-child td{border-bottom:none}
+.fr{color:var(--blue);font-weight:700}
+.pt{color:var(--green)}
+.gram-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:8px;border-left:3px solid #fbbf24;padding-left:8px;line-height:1.5}
+/* RESOURCES */
+.res-card{display:flex;gap:12px;background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;margin:0 16px 8px;align-items:flex-start}
+.res-ico{font-size:30px;flex-shrink:0}
+.res-title{font-size:14px;font-weight:800;margin-bottom:2px}
+.res-desc{font-size:12px;color:var(--muted);line-height:1.4}
+.res-tags{margin-top:5px;display:flex;gap:4px;flex-wrap:wrap}
+.res-tag{border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700}
+.res-tag.free{background:#dcfce7;color:#166534}
+.res-tag.app{background:#dbeafe;color:#1d4ed8}
+.res-tag.audio{background:#fef3c7;color:#92400e}
+.res-tag.video{background:#fce7f3;color:#9d174d}
+.res-tag.qc{background:#fff3e0;color:#c2410c}
+/* SECTION LABELS */
+.sec-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:14px 16px 6px}
+/* AUDIO BUTTONS */
+.btn-audio{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;border-radius:50%;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;font-family:inherit;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.btn-audio:active{background:rgba(255,255,255,.35)}
+.btn-audio.dark{background:#eff6ff;border-color:var(--border);color:var(--blue)}
+.btn-audio.dark:active{background:#dbeafe}
+.btn-audio.playing{background:rgba(255,255,255,.4);animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.audio-bar{display:flex;align-items:center;gap:8px;margin-top:12px}
+.speed-toggle{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit}
+.speed-toggle.active{background:rgba(255,255,255,.35)}
+.tts-notice{font-size:11px;opacity:.6;font-style:italic}
+</style>
+</head>
+<body>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('home')"><span class="tab-ico">🏠</span><span class="tab-lbl">Início</span></button>
+  <button class="tab" onclick="switchTab('vocab')"><span class="tab-ico">📚</span><span class="tab-lbl">Vocabulário</span></button>
+  <button class="tab" onclick="switchTab('expr')"><span class="tab-ico">💬</span><span class="tab-lbl">Expressões</span></button>
+  <button class="tab" onclick="switchTab('pron')"><span class="tab-ico">🔊</span><span class="tab-lbl">Pronúncia</span></button>
+  <button class="tab" onclick="switchTab('gram')"><span class="tab-ico">📝</span><span class="tab-lbl">Gramática</span></button>
+</div>
+
+<!-- ════ HOME ════ -->
+<div id="sec-home" class="sec active">
+  <div class="hdr">
+    <span class="hdr-flag">🇫🇷 🇨🇦</span>
+    <div class="hdr-title">Mon Français</div>
+    <div class="hdr-sub">Método pessoal — Luiz Silva</div>
+  </div>
+
+  <!-- Daily expression -->
+  <div class="daily" id="daily-card">
+    <div class="daily-badge">✨ Expressão do dia</div>
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="flex:1">
+        <div class="daily-fr" id="d-fr"></div>
+        <div class="daily-ipa" id="d-ipa"></div>
+      </div>
+      <button class="btn-audio" id="daily-audio-btn" aria-label="Ouvir pronúncia">🔊</button>
+    </div>
+    <div class="daily-pt" id="d-pt"></div>
+    <div class="audio-bar">
+      <button class="speed-toggle" id="g-speed" onclick="toggleSpeed(this)">▶ Normal</button>
+      <span class="tts-notice">voz fr-CA sintetizada</span>
+    </div>
+    <div class="daily-ctx" id="d-ctx"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="s-known">0</div><div class="stat-lbl">Palavras<br>aprendidas</div></div>
+    <div class="stat"><div class="stat-val" id="s-expr">0</div><div class="stat-lbl">Expressões<br>vistas</div></div>
+    <div class="stat"><div class="stat-val" id="s-streak">0</div><div class="stat-lbl">Dias<br>de estudo</div></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="prog-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="prog-lbl">Progresso geral</div>
+      <div class="prog-lbl" id="prog-pct">0%</div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Phases -->
+  <div class="sec-lbl">Seu Plano de Estudo</div>
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-ico">🌱</div>
+      <div class="phase-info">
+        <div class="phase-title">Fase 1 — Sobrevivência</div>
+        <div class="phase-sub">Saudações, números, frases básicas · 20 min/dia</div>
+      </div>
+      <div class="phase-badge">Meses 1–2</div>
+    </div>
+    <div class="phase">
+      <div class="phase-ico">🗣️</div>
+      <div class="phase-info">
+        <div class="phase-title">Fase 2 — Comunicação</div>
+        <div class="phase-sub">Temas do dia a dia, rádio francês · 25 min/dia</div>
+      </div>
+      <div class="phase-badge">Meses 3–5</div>
+    </div>
+    <div class="phase">
+      <div class="phase-ico">⭐</div>
+      <div class="phase-info">
+        <div class="phase-title">Fase 3 — Expressão Nativa</div>
+        <div class="phase-sub">Idiomas, TV, conversa com nativos · 30 min/dia</div>
+      </div>
+      <div class="phase-badge">Meses 6–12</div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Rotina Diária Recomendada</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px;align-items:center"><span style="font-size:20px">☀️</span><div><div style="font-size:13px;font-weight:700">Manhã — 5 min</div><div style="font-size:12px;color:var(--muted)">Flashcard do dia · revisão rápida</div></div></div>
+      <div style="display:flex;gap:10px;align-items:center"><span style="font-size:20px">📖</span><div><div style="font-size:13px;font-weight:700">Tarde — 10 min</div><div style="font-size:12px;color:var(--muted)">Lição nova (Duolingo / Babbel)</div></div></div>
+      <div style="display:flex;gap:10px;align-items:center"><span style="font-size:20px">🎧</span><div><div style="font-size:13px;font-weight:700">Noite — 10 min</div><div style="font-size:12px;color:var(--muted)">Rádio-Canada · música francesa · podcast</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Sua Vantagem Natural</div>
+  <div class="card">
+    <div style="font-size:13px;line-height:1.7;color:var(--text)">
+      🇧🇷 <strong>Português → Francês:</strong> ~1.500 palavras quase idênticas sem estudar. <em>Nation, culture, animal, important, possible, communication...</em><br><br>
+      🇪🇸 <strong>Espanhol:</strong> gramática (gênero, conjugação, artigos) muito parecida.<br><br>
+      🇨🇦 <strong>New Brunswick:</strong> única província oficialmente bilíngue. Francês em placas, TV, rádio e nas ruas de Moncton.
+    </div>
+  </div>
+</div>
+
+<!-- ════ VOCABULÁRIO ════ -->
+<div id="sec-vocab" class="sec">
+  <div class="hdr">
+    <div class="hdr-title">📚 Vocabulário</div>
+    <div class="hdr-sub">Escolha um tema e pratique com flashcards</div>
+  </div>
+
+  <div class="sec-lbl">Temas</div>
+  <div class="themes" id="themes-grid"></div>
+
+  <div class="fc-area" id="fc-area" style="display:none">
+    <div class="fc-counter" id="fc-counter"></div>
+    <div class="fc-wrap" onclick="flipCard()">
+      <div class="fc" id="fc">
+        <div class="fc-f">
+          <div class="fc-word" id="fc-fr"></div>
+          <div class="fc-ipa" id="fc-ipa"></div>
+          <button class="btn-audio" id="fc-audio-btn" style="margin:8px 0 4px" aria-label="Ouvir pronúncia">🔊</button>
+          <div class="fc-hint">Toque no card para a tradução</div>
+        </div>
+        <div class="fc-b">
+          <div class="fc-translation" id="fc-pt"></div>
+          <div class="fc-example" id="fc-ex"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-actions">
+      <button class="btn-review" onclick="markCard(false)">😓 Revisar</button>
+      <button class="btn-knew" onclick="markCard(true)">✅ Sei!</button>
+    </div>
+    <button class="btn-next" onclick="nextCard()">Próxima palavra →</button>
+  </div>
+</div>
+
+<!-- ════ EXPRESSÕES ════ -->
+<div id="sec-expr" class="sec">
+  <div class="hdr">
+    <div class="hdr-title">💬 Expressões</div>
+    <div class="hdr-sub">Expressões usadas por nativos canadenses</div>
+  </div>
+  <div id="expr-list"></div>
+</div>
+
+<!-- ════ PRONÚNCIA ════ -->
+<div id="sec-pron" class="sec">
+  <div class="hdr">
+    <div class="hdr-title">🔊 Pronúncia</div>
+    <div class="hdr-sub">Sons do francês para falantes de português</div>
+  </div>
+
+  <div class="tip-card" style="margin-top:12px">
+    <strong>💡 Dica geral:</strong> O francês tem muito menos variação de entonação que o português. Fale mais "plano" e uniforme. As vogais são mais puras e curtas. Consoantes finais geralmente são mudas.
+  </div>
+
+  <div id="sounds-list"></div>
+
+  <div class="sec-lbl">⚠️ Falsos Cognatos — Cuidado!</div>
+  <div id="false-list"></div>
+</div>
+
+<!-- ════ GRAMÁTICA ════ -->
+<div id="sec-gram" class="sec">
+  <div class="hdr">
+    <div class="hdr-title">📝 Gramática</div>
+    <div class="hdr-sub">Comparação Português ↔ Francês</div>
+  </div>
+  <div id="gram-list"></div>
+
+  <div class="sec-lbl">📱 Recursos Gratuitos</div>
+  <div id="res-list"></div>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+const DAILY = [
+  {fr:"Ça marche!",ipa:"(sa maʁʃ)",pt:"Funciona! / Tá bom!",ctx:"Usado quando algo está resolvido ou quando você concorda. Equivale ao nosso 'tá bom' ou 'pode ser'."},
+  {fr:"C'est le boutte!",ipa:"(sɛ lə but)",pt:"É incrível! / É o máximo!",ctx:"Expressão québécoise típica. Usada para algo muito bom ou que impressionou."},
+  {fr:"Avoir le cafard",ipa:"(avwaʁ lə kafaʁ)",pt:"Estar deprimido / com saudade",ctx:"Literalmente 'ter a barata'. Usado quando alguém está melancólico ou com saudade."},
+  {fr:"En tout cas...",ipa:"(ɑ̃ tu ka)",pt:"De qualquer forma... / Enfim...",ctx:"Transição de assunto muito comum no francês falado. Equivale ao nosso 'de qualquer jeito'."},
+  {fr:"Tant pis.",ipa:"(tɑ̃ pi)",pt:"Que pena. / Paciência.",ctx:"Resignação. Quando algo não saiu como esperado. Pode ser dito com um encolher de ombros."},
+  {fr:"Bof...",ipa:"(bɔf)",pt:"Mais ou menos... / Não sei...",ctx:"Expressão de indiferença ou hesitação. Um dos sons mais franceses que existem!"},
+  {fr:"Hein?",ipa:"(ɛ̃)",pt:"Né? / Hm? / O quê?",ctx:"No Canadá é usado o tempo todo para confirmar entendimento, como 'né?' no Brasil."},
+  {fr:"Avoir du pain sur la planche",ipa:"(avwaʁ dy pɛ̃ syʁ la plɑ̃ʃ)",pt:"Ter muito trabalho pela frente",ctx:"Literalmente 'ter pão sobre a tábua'. Usado quando há muitas tarefas a fazer."},
+  {fr:"Coûter les yeux de la tête",ipa:"(kute le zjø də la tɛt)",pt:"Custar os olhos da cara",ctx:"Equivalente direto ao português! Diz-se de algo muito caro."},
+  {fr:"Il pleut des cordes.",ipa:"(il plø de kɔʁd)",pt:"Está chovendo muito.",ctx:"Literalmente 'chove cordas'. Equivale ao inglês 'it's raining cats and dogs'."},
+  {fr:"Coup de foudre",ipa:"(ku də fudʁ)",pt:"Amor à primeira vista",ctx:"Literalmente 'golpe de raio'. Usado para descrever quando alguém se apaixona instantaneamente."},
+  {fr:"N'importe quoi!",ipa:"(nɛ̃pɔʁt kwa)",pt:"Que absurdo! / Qualquer coisa!",ctx:"Expressão de descrença ou indignação. Como 'que coisa!' ou 'que absurdo!'"},
+  {fr:"C'est normal.",ipa:"(sɛ nɔʁmal)",pt:"É normal. / Faz sentido.",ctx:"Os canadenses usam muito para validar ou confirmar algo. Equivale ao nosso 'normal'."},
+  {fr:"Tomber dans les pommes",ipa:"(tɔ̃be dɑ̃ le pɔm)",pt:"Desmaiar",ctx:"Literalmente 'cair nas maçãs'. Expressão antiga ainda muito usada."},
+  {fr:"Donner sa langue au chat",ipa:"(dɔne sa lɑ̃g o ʃa)",pt:"Desistir de adivinhar",ctx:"Literalmente 'dar a língua ao gato'. Quando alguém não sabe a resposta de um enigma."},
+];
+
+const THEMES = [
+  {id:'greet',ico:'👋',lbl:'Saudações',words:[
+    {fr:'Bonjour',ipa:'bɔ̃.ʒuʁ',pt:'Bom dia / Olá',ex:'Bonjour, comment allez-vous? — Bom dia, como vai?'},
+    {fr:'Bonsoir',ipa:'bɔ̃.swaʁ',pt:'Boa noite (chegando)',ex:'Bonsoir! Bienvenue! — Boa noite! Bem-vindo!'},
+    {fr:'Salut',ipa:'sa.ly',pt:'Oi (informal)',ex:'Salut! Comment ça va? — Oi! Como vai?'},
+    {fr:'Au revoir',ipa:'o.ʁə.vwaʁ',pt:'Até logo',ex:'Au revoir! À bientôt! — Até logo! Até breve!'},
+    {fr:'Comment ça va?',ipa:'kɔ.mɑ̃ sa va',pt:'Como vai? (informal)',ex:'— Comment ça va? — Ça va bien, merci!'},
+    {fr:'Très bien, merci',ipa:'tʁɛ.bjɛ̃ mɛʁ.si',pt:'Muito bem, obrigado',ex:'Ça va? — Très bien, merci, et vous?'},
+    {fr:'S\'il vous plaît',ipa:'sil.vu.plɛ',pt:'Por favor (formal)',ex:'Un café, s\'il vous plaît. — Um café, por favor.'},
+    {fr:'Merci beaucoup',ipa:'mɛʁ.si bo.ku',pt:'Muito obrigado',ex:'Merci beaucoup pour votre aide! — Muito obrigado pela ajuda!'},
+    {fr:'De rien',ipa:'də.ʁjɛ̃',pt:'De nada',ex:'— Merci! — De rien, c\'est normal!'},
+    {fr:'Excusez-moi',ipa:'ɛk.sky.ze.mwa',pt:'Com licença (formal)',ex:'Excusez-moi, où est la sortie? — Com licença, onde é a saída?'},
+    {fr:'Je m\'appelle...',ipa:'ʒə ma.pɛl',pt:'Meu nome é...',ex:'Je m\'appelle Luiz. Et vous? — Meu nome é Luiz. E o senhor?'},
+    {fr:'Enchanté(e)',ipa:'ɑ̃.ʃɑ̃.te',pt:'Prazer em conhecer',ex:'Je m\'appelle Marie. — Enchanté! — Prazer!'},
+  ]},
+  {id:'food',ico:'🍽️',lbl:'Restaurante',words:[
+    {fr:'Je voudrais...',ipa:'ʒə vu.dʁɛ',pt:'Eu gostaria...',ex:'Je voudrais une soupe, s\'il vous plaît. — Eu gostaria de uma sopa, por favor.'},
+    {fr:'L\'addition',ipa:'la.di.sjɔ̃',pt:'A conta',ex:'L\'addition, s\'il vous plaît! — A conta, por favor!'},
+    {fr:'C\'est délicieux!',ipa:'sɛ de.li.sjø',pt:'Está delicioso!',ex:'Mmm, c\'est délicieux! — Nossa, está delicioso!'},
+    {fr:'Le menu',ipa:'lə mə.ny',pt:'O cardápio',ex:'Avez-vous le menu? — Vocês têm o cardápio?'},
+    {fr:'Une table pour deux',ipa:'yn tabl puʁ dø',pt:'Uma mesa para dois',ex:'Bonsoir! Une table pour deux, s\'il vous plaît.'},
+    {fr:'L\'eau',ipa:'lo',pt:'A água',ex:'De l\'eau, s\'il vous plaît. — Água, por favor.'},
+    {fr:'Le pain',ipa:'lə pɛ̃',pt:'O pão',ex:'Encore du pain, s\'il vous plaît. — Mais pão, por favor.'},
+    {fr:'C\'est compris?',ipa:'sɛ kɔ̃.pʁi',pt:'Está incluído?',ex:'Le service est compris? — O serviço está incluído?'},
+    {fr:'Je suis végétarien',ipa:'ʒə sɥi ve.ʒe.ta.ʁjɛ̃',pt:'Sou vegetariano',ex:'Je suis végétarien. Qu\'est-ce que vous recommandez?'},
+    {fr:'C\'était excellent!',ipa:'sɛ.tɛ ɛk.se.lɑ̃',pt:'Estava excelente!',ex:'C\'était vraiment excellent! Merci! — Estava excelente! Obrigado!'},
+  ]},
+  {id:'shop',ico:'🛒',lbl:'Compras',words:[
+    {fr:'Combien ça coûte?',ipa:'kɔ̃.bjɛ̃ sa kut',pt:'Quanto custa?',ex:'Combien ça coûte, ce manteau? — Quanto custa esse casaco?'},
+    {fr:'C\'est trop cher.',ipa:'sɛ tʁo ʃɛʁ',pt:'É muito caro.',ex:'Non merci, c\'est trop cher pour moi. — Não obrigado, é muito caro pra mim.'},
+    {fr:'Je cherche...',ipa:'ʒə ʃɛʁʃ',pt:'Estou procurando...',ex:'Je cherche une pharmacie. — Estou procurando uma farmácia.'},
+    {fr:'Quelle taille?',ipa:'kɛl taj',pt:'Qual tamanho?',ex:'Quelle taille faites-vous? — Qual tamanho você usa?'},
+    {fr:'Vous avez ça en...?',ipa:'vu.za.ve sa ɑ̃',pt:'Vocês têm isso em...?',ex:'Vous avez ça en bleu? — Vocês têm isso em azul?'},
+    {fr:'Je peux essayer?',ipa:'ʒə pø ɛ.sɛ.je',pt:'Posso experimentar?',ex:'Je peux essayer ce veston? — Posso experimentar esse paletó?'},
+    {fr:'Je prends celui-ci.',ipa:'ʒə pʁɑ̃ sə.lɥi.si',pt:'Vou levar este.',ex:'C\'est parfait. Je prends celui-ci. — Perfeito. Vou levar este.'},
+    {fr:'Carte ou comptant?',ipa:'kaʁt u kɔ̃.tɑ̃',pt:'Cartão ou dinheiro?',ex:'Vous payez comment? Carte ou comptant? — Como vai pagar?'},
+    {fr:'Le reçu',ipa:'lə ʁə.sy',pt:'O recibo',ex:'Puis-je avoir mon reçu? — Posso ter meu recibo?'},
+    {fr:'En solde',ipa:'ɑ̃ sɔld',pt:'Em promoção / liquidação',ex:'Tous ces articles sont en solde! — Todos esses artigos estão em promoção!'},
+  ]},
+  {id:'health',ico:'🏥',lbl:'Saúde',words:[
+    {fr:'J\'ai mal à...',ipa:'ʒɛ mal a',pt:'Estou com dor em...',ex:'J\'ai mal à la tête. — Estou com dor de cabeça.'},
+    {fr:'Le médecin',ipa:'lə med.sɛ̃',pt:'O médico',ex:'Je voudrais voir un médecin. — Gostaria de ver um médico.'},
+    {fr:'La pharmacie',ipa:'la faʁ.ma.si',pt:'A farmácia',ex:'Y a-t-il une pharmacie près d\'ici? — Tem uma farmácia perto daqui?'},
+    {fr:'Je suis allergique à...',ipa:'ʒə sɥi a.lɛʁ.ʒik a',pt:'Sou alérgico a...',ex:'Je suis allergique aux arachides. — Sou alérgico ao amendoim.'},
+    {fr:'Appelez une ambulance!',ipa:'a.ple yn ɑ̃.by.lɑ̃s',pt:'Chame uma ambulância!',ex:'Urgence! Appelez une ambulance, s\'il vous plaît!'},
+    {fr:'Depuis quand?',ipa:'də.pɥi kɑ̃',pt:'Desde quando?',ex:'Depuis quand avez-vous ces symptômes? — Desde quando tem esses sintomas?'},
+    {fr:'Je prends des médicaments.',ipa:'ʒə pʁɑ̃ de me.di.ka.mɑ̃',pt:'Estou tomando remédios.',ex:'Je prends des médicaments pour la tension. — Tomo remédios para pressão.'},
+    {fr:'Avez-vous une assurance?',ipa:'a.ve.vu yn a.sy.ʁɑ̃s',pt:'Você tem plano de saúde?',ex:'Avez-vous une carte d\'assurance maladie? — Tem cartão do plano?'},
+    {fr:'La douleur',ipa:'la du.lœʁ',pt:'A dor',ex:'La douleur est intense. — A dor é intensa.'},
+    {fr:'Je me sens mieux.',ipa:'ʒə mə sɑ̃ mjø',pt:'Estou me sentindo melhor.',ex:'Merci docteur, je me sens mieux. — Obrigado doutor, estou melhor.'},
+  ]},
+  {id:'transit',ico:'🚌',lbl:'Transporte',words:[
+    {fr:'Où est...?',ipa:'u ɛ',pt:'Onde é...?',ex:'Où est l\'arrêt d\'autobus? — Onde é o ponto de ônibus?'},
+    {fr:'L\'autobus',ipa:'lo.to.bys',pt:'O ônibus',ex:'Quel autobus va au centre-ville? — Qual ônibus vai para o centro?'},
+    {fr:'La gare',ipa:'la gaʁ',pt:'A estação (trem)',ex:'Comment aller à la gare? — Como chegar à estação?'},
+    {fr:'Un aller simple',ipa:'œ̃ n‿a.le sɛ̃pl',pt:'Uma passagem só de ida',ex:'Un aller simple pour Moncton, s\'il vous plaît.'},
+    {fr:'Un aller-retour',ipa:'œ̃ n‿a.le ʁə.tuʁ',pt:'Uma passagem ida e volta',ex:'Un aller-retour pour Québec, s\'il vous plaît.'},
+    {fr:'À quelle heure?',ipa:'a kɛ.lœʁ',pt:'A que horas?',ex:'À quelle heure part le prochain autobus? — A que horas sai o próximo ônibus?'},
+    {fr:'C\'est loin?',ipa:'sɛ lwɛ̃',pt:'É longe?',ex:'C\'est loin d\'ici? — É longe daqui?'},
+    {fr:'Tournez à gauche/droite',ipa:'tuʁ.ne a goʃ/dʁwat',pt:'Vire à esquerda/direita',ex:'Tournez à gauche au feu. — Vire à esquerda no semáforo.'},
+    {fr:'Tout droit',ipa:'tu dʁwa',pt:'Em frente / Direto',ex:'Continuez tout droit pendant 2 km. — Continue em frente por 2 km.'},
+    {fr:'Je suis perdu(e).',ipa:'ʒə sɥi pɛʁ.dy',pt:'Estou perdido(a).',ex:'Excusez-moi, je suis perdu. Pouvez-vous m\'aider?'},
+  ]},
+  {id:'weather',ico:'🌤️',lbl:'Tempo/Clima',words:[
+    {fr:'Quel temps fait-il?',ipa:'kɛl tɑ̃ fɛ.til',pt:'Que tempo está fazendo?',ex:'Quel temps fait-il aujourd\'hui? — Que tempo está fazendo hoje?'},
+    {fr:'Il fait froid.',ipa:'il fɛ fʁwa',pt:'Está frio.',ex:'Il fait vraiment froid ce matin! — Está muito frio essa manhã!'},
+    {fr:'Il neige.',ipa:'il nɛʒ',pt:'Está nevando.',ex:'Attention, il neige beaucoup dehors! — Cuidado, está nevando muito lá fora!'},
+    {fr:'Il pleut.',ipa:'il plø',pt:'Está chovendo.',ex:'Prends ton parapluie, il pleut. — Leva o guarda-chuva, está chovendo.'},
+    {fr:'Il fait beau.',ipa:'il fɛ bo',pt:'Está bom tempo.',ex:'Il fait beau aujourd\'hui! On sort? — Está bom hoje! Saímos?'},
+    {fr:'Le verglas',ipa:'lə vɛʁ.gla',pt:'O gelo (na pista)',ex:'Attention au verglas sur la route! — Cuidado com o gelo na estrada!'},
+    {fr:'La tempête',ipa:'la tɑ̃.pɛt',pt:'A tempestade',ex:'Une grosse tempête arrive ce soir. — Uma grande tempestade vem esta noite.'},
+    {fr:'Degrés Celsius',ipa:'də.gʁe sɛl.sjys',pt:'Graus Celsius',ex:'Il fait moins vingt degrés! — Está menos vinte graus!'},
+    {fr:'Le manteau',ipa:'lə mɑ̃.to',pt:'O casaco/abrigo',ex:'Mets ton manteau, il fait froid! — Bota o casaco, está frio!'},
+    {fr:'Quelle belle journée!',ipa:'kɛl bɛl ʒuʁ.ne',pt:'Que dia lindo!',ex:'Quelle belle journée! Le soleil brille. — Que dia lindo! O sol está brilhando.'},
+  ]},
+  {id:'work',ico:'💼',lbl:'Trabalho',words:[
+    {fr:'Je travaille comme...',ipa:'ʒə tʁa.vaj kɔm',pt:'Eu trabalho como...',ex:'Je travaille comme ingénieur. — Eu trabalho como engenheiro.'},
+    {fr:'Mon bureau',ipa:'mɔ̃ by.ʁo',pt:'Meu escritório',ex:'Mon bureau est au troisième étage. — Meu escritório é no terceiro andar.'},
+    {fr:'La réunion',ipa:'la ʁe.y.njɔ̃',pt:'A reunião',ex:'J\'ai une réunion à 10h. — Tenho uma reunião às 10h.'},
+    {fr:'Je suis en retard.',ipa:'ʒə sɥi ɑ̃ ʁə.taʁ',pt:'Estou atrasado.',ex:'Désolé, je suis en retard. — Desculpe, estou atrasado.'},
+    {fr:'Pouvez-vous répéter?',ipa:'pu.ve.vu ʁe.pe.te',pt:'Pode repetir?',ex:'Désolé, pouvez-vous répéter plus lentement? — Desculpe, pode repetir mais devagar?'},
+    {fr:'Je ne comprends pas.',ipa:'ʒə nə kɔ̃.pʁɑ̃ pa',pt:'Não entendo.',ex:'Excusez-moi, je ne comprends pas. Parlez-vous anglais?'},
+    {fr:'C\'est urgent.',ipa:'sɛ tyʁ.ʒɑ̃',pt:'É urgente.',ex:'Désolé de vous déranger, c\'est urgent. — Desculpe incomodar, é urgente.'},
+    {fr:'Bien sûr!',ipa:'bjɛ̃ syʁ',pt:'Claro! Com certeza!',ex:'Pouvez-vous m\'aider? — Bien sûr! — Pode me ajudar? — Claro!'},
+    {fr:'Le courriel',ipa:'lə ku.ʁjɛl',pt:'O e-mail (termo canadense)',ex:'Envoyez-moi un courriel. — Me mande um e-mail. (QC: courriel, não "email")'},
+    {fr:'À tout à l\'heure!',ipa:'a tu.ta lœʁ',pt:'Até mais tarde / Até logo!',ex:'Bonne journée! À tout à l\'heure! — Bom dia! Até logo!'},
+  ]},
+  {id:'social',ico:'🤝',lbl:'Conversação',words:[
+    {fr:'Depuis combien de temps?',ipa:'də.pɥi kɔ̃.bjɛ̃ də tɑ̃',pt:'Há quanto tempo?',ex:'Depuis combien de temps habitez-vous ici? — Há quanto tempo você mora aqui?'},
+    {fr:'D\'où venez-vous?',ipa:'du və.ne.vu',pt:'De onde você é?',ex:'D\'où venez-vous? — Je suis du Brésil. — De onde você é? — Sou do Brasil.'},
+    {fr:'J\'apprends le français.',ipa:'ʒa.pʁɑ̃ lə fʁɑ̃.sɛ',pt:'Estou aprendendo francês.',ex:'Excusez mon français, j\'apprends encore. — Desculpe meu francês, ainda estou aprendendo.'},
+    {fr:'Parlez plus lentement.',ipa:'paʁ.le ply lɑ̃t.mɑ̃',pt:'Fale mais devagar.',ex:'Pourriez-vous parler plus lentement, s\'il vous plaît?'},
+    {fr:'Je ne parle pas bien.',ipa:'ʒə nə paʁl pa bjɛ̃',pt:'Não falo bem.',ex:'Je ne parle pas très bien le français, mais j\'essaie!'},
+    {fr:'Quel âge avez-vous?',ipa:'kɛ.laʒ a.ve.vu',pt:'Qual é a sua idade?',ex:'Quel âge avez-vous? — J\'ai soixante-quatre ans. — 64 anos.'},
+    {fr:'J\'aime beaucoup...',ipa:'ʒɛm bo.ku',pt:'Gosto muito de...',ex:'J\'aime beaucoup le hockey et la nature. — Gosto muito de hóquei e natureza.'},
+    {fr:'C\'est gentil!',ipa:'sɛ ʒɑ̃.ti',pt:'Que gentileza! / Que legal!',ex:'Merci pour l\'invitation! C\'est très gentil! — Obrigado pelo convite! Muito gentil!'},
+    {fr:'Félicitations!',ipa:'fe.li.si.ta.sjɔ̃',pt:'Parabéns!',ex:'Félicitations pour ton anniversaire! — Parabéns pelo seu aniversário!'},
+    {fr:'Bonne chance!',ipa:'bɔn ʃɑ̃s',pt:'Boa sorte!',ex:'Bonne chance pour ton examen! — Boa sorte na prova!'},
+  ]},
+];
+
+const EXPRS = [
+  {fr:"Ça marche!",ipa:"sa maʁʃ",pt:"Funciona! / Tá bom! / Combinado!",ctx:"— On se retrouve à midi? — Ça marche! (— Nos encontramos ao meio-dia? — Tá bom!)",tag:"both"},
+  {fr:"C'est le boutte!",ipa:"sɛ lə but",pt:"É incrível! / É o máximo!",ctx:"Cette poutine, c'est vraiment le boutte! (Essa poutine é incrível!)",tag:"qc"},
+  {fr:"Hein?",ipa:"ɛ̃",pt:"Né? / Hm? / O quê?",ctx:"Il fait froid, hein? (Está frio, né?) — Muito usado para confirmar, como 'né?' no Brasil.",tag:"qc"},
+  {fr:"En tout cas...",ipa:"ɑ̃ tu ka",pt:"De qualquer forma... / Enfim...",ctx:"En tout cas, on verra demain. (De qualquer forma, veremos amanhã.)",tag:"both"},
+  {fr:"Tant pis.",ipa:"tɑ̃ pi",pt:"Que pena. / Paciência. / Azar.",ctx:"— Le film est complet. — Tant pis, on ira demain. (— Lotado. — Que pena, iremos amanhã.)",tag:"both"},
+  {fr:"Tant mieux!",ipa:"tɑ̃ mjø",pt:"Ainda bem! / Ótimo! / Que bom!",ctx:"— J'ai trouvé un emploi! — Tant mieux! (— Achei emprego! — Que bom!)",tag:"both"},
+  {fr:"Bof...",ipa:"bɔf",pt:"Mais ou menos... / Não sei... / Meh...",ctx:"— Tu as aimé le film? — Bof... (— Gostou do filme? — Mais ou menos...)",tag:"both"},
+  {fr:"N'importe quoi!",ipa:"nɛ̃.pɔʁt kwa",pt:"Que absurdo! / Que bobagem!",ctx:"Il dit n'importe quoi! (Ele fala qualquer bobagem!) — Expressão de descrença.",tag:"both"},
+  {fr:"C'est pas de mes affaires.",ipa:"sɛ pa də me.za.fɛʁ",pt:"Não é da minha conta.",ctx:"Ce qu'il fait, c'est pas de mes affaires. (O que ele faz não é da minha conta.)",tag:"qc"},
+  {fr:"Avoir le cafard",ipa:"a.vwaʁ lə ka.faʁ",pt:"Estar deprimido / com saudade",ctx:"Depuis qu'il est parti, j'ai le cafard. (Desde que ele foi embora, estou com saudade.)",tag:"fr"},
+  {fr:"Coûter les yeux de la tête",ipa:"ku.te le zjø də la tɛt",pt:"Custar os olhos da cara",ctx:"Cette voiture coûte les yeux de la tête! (Esse carro custa os olhos da cara!)",tag:"both"},
+  {fr:"Il pleut des cordes.",ipa:"il plø de kɔʁd",pt:"Está chovendo muito (chovendo canivetes).",ctx:"Reste à la maison, il pleut des cordes dehors! (Fica em casa, está chovendo muito lá fora!)",tag:"both"},
+  {fr:"Avoir du pain sur la planche",ipa:"a.vwaʁ dy pɛ̃ syʁ la plɑ̃ʃ",pt:"Ter muito trabalho pela frente",ctx:"On a du pain sur la planche aujourd'hui! (Temos muito trabalho hoje!)",tag:"both"},
+  {fr:"Tomber dans les pommes",ipa:"tɔ̃.be dɑ̃ le pɔm",pt:"Desmaiar",ctx:"Il a eu si peur qu'il est tombé dans les pommes. (Ele ficou com tanto medo que desmaiou.)",tag:"fr"},
+  {fr:"Donner sa langue au chat",ipa:"dɔ.ne sa lɑ̃g o ʃa",pt:"Desistir de adivinhar",ctx:"Tu donnes ta langue au chat? (Vai desistir de adivinhar?)",tag:"both"},
+  {fr:"Coup de foudre",ipa:"ku də fudʁ",pt:"Amor à primeira vista",ctx:"Quand il l'a vue, ce fut un vrai coup de foudre. (Quando ele a viu, foi amor à primeira vista.)",tag:"both"},
+  {fr:"Mettre les pieds dans le plat",ipa:"mɛ.tʁə le pje dɑ̃ lə pla",pt:"Meter os pés pelas mãos / Dizer o que não devia",ctx:"Il a vraiment mis les pieds dans le plat! (Ele realmente meteu os pés pelas mãos!)",tag:"both"},
+  {fr:"À tout à l'heure!",ipa:"a tu.ta lœʁ",pt:"Até logo! / Até mais tarde!",ctx:"Bonne journée! À tout à l'heure! (Bom dia! Até logo!)",tag:"both"},
+  {fr:"C'est dans ma nature.",ipa:"sɛ dɑ̃ ma na.tyʁ",pt:"É da minha natureza. / Sou assim.",ctx:"Je suis toujours en avance — c'est dans ma nature. (Sempre sou pontual — é da minha natureza.)",tag:"both"},
+  {fr:"Franchement!",ipa:"fʁɑ̃ʃ.mɑ̃",pt:"Francamente! / Sério!",ctx:"Franchement, c'est incroyable! (Francamente, é inacreditável!)",tag:"both"},
+];
+
+const SOUNDS = [
+  {sym:'R',ipa:'/ʁ/',desc:'O R francês é uvular — feito na garganta, não com a língua. Pense em fazer um leve gargarejo. Comece suave, será natural em poucas semanas.',tip:'Dica: tente dizer "ach" em alemão ou gargareje levemente. Esse é o som!',exs:['rue (rua)','rouge (vermelho)','Paris','merci','parler']},
+  {sym:'U',ipa:'/y/',desc:'Diferente do U português. Faça o som de "i" (língua alta e frontal) mas com os lábios arredondados como se fosse dizer "u". É um som único do francês!',tip:'Dica: diga "i" (como em "vida") e, sem mover a língua, arredonde os lábios. Isso é o U francês.',exs:['tu (você)','rue (rua)','sur (sobre)','lune (lua)','bureau']},
+  {sym:'AN/EN',ipa:'/ɑ̃/',desc:'Vogal nasal aberta. Parecida com o nosso "ã" mas mais aberta e grave. Diga "ã" abrindo bem a boca.',tip:'Dica: é como o "an" em "andar" — mas sem completar a consoante N. Fica no nariz.',exs:['dans (em)','enfant (criança)','temps (tempo)','France','entendre']},
+  {sym:'IN/AIN',ipa:'/ɛ̃/',desc:'Vogal nasal fechada. Parecida com "im" ou "em" do português, mas sem o M/N final.',tip:'Dica: diga "fim" em português e pare antes do M. Esse é o som de "in" francês.',exs:['vin (vinho)','pain (pão)','train (trem)','matin (manhã)','américain']},
+  {sym:'ON',ipa:'/ɔ̃/',desc:'Vogal nasal posterior. Como o "om" ou "on" do português (bom, com), mas sem fechar o som com M/N.',tip:'Dica: diga "bom" em português, mas pare antes do M. Deixe sair pelo nariz.',exs:['bon (bom)','ton (seu)','pont (ponte)','maison (casa)','bonjour']},
+  {sym:'E mudo',ipa:'/ə/',desc:'O E no final de palavras ou em posição fraca geralmente não se pronuncia. Isso cria o ritmo "escorregado" do francês.',tip:'Dica: "je parle" não é "jê pârl" — é quase "j\'parl". O E cai na fala normal.',exs:['je (eu)','le (o)','que (que)','samedi','fenêtre']},
+  {sym:'Liaison',ipa:'',desc:'Quando uma palavra termina em consoante (normalmente muda) e a próxima começa por vogal, as palavras se ligam. Muito importante para soar natural!',tip:'Dica: "les enfants" → "lɛ-zɑ̃-fɑ̃" (o S de les liga ao E de enfants). Pratique em frases completas.',exs:['les_enfants','vous_avez','nous_avons','est-il','ils_ont']},
+  {sym:'Consoantes finais',ipa:'',desc:'No francês, a maioria das consoantes no final da palavra não se pronuncia. Exceção: as letras C, R, F, L (lembre: CaReFuL em inglês).',tip:'Dica: "vous" → "vu" (o S é mudo). "Paris" → "Pa-ri" (S mudo). "mer" → "mɛʁ" (R se pronuncia).',exs:['vous (vu)','Paris (Pa-ri)','allez (a-le)','mer (mɛʁ)','chef (ʃɛf)']},
+];
+
+const FALSE_COGNATES = [
+  {fr:'librairie',wrong:'biblioteca',right:'livraria (bibliothèque = biblioteca)'},
+  {fr:'rester',wrong:'descansar',right:'ficar/permanecer (se reposer = descansar)'},
+  {fr:'lecture',wrong:'palestra',right:'leitura (conférence = palestra)'},
+  {fr:'actuellement',wrong:'atualmente (como sempre)',right:'agora/no momento (en fait = na verdade)'},
+  {fr:'sensible',wrong:'sensato',right:'sensível (raisonnable = sensato)'},
+  {fr:'large',wrong:'grande',right:'largo/amplo (grand = grande)'},
+  {fr:'blesser',wrong:'abençoar',right:'machucar/ferir (bénir = abençoar)'},
+  {fr:'assister à',wrong:'assistir (ver)',right:'comparecer/participar de (regarder = assistir TV)'},
+];
+
+const GRAMMAR = [
+  {title:'Artigos — le, la, les, un, une, des',content:`
+    <table class="gram-table">
+      <tr><th>Tipo</th><th>Masculino</th><th>Feminino</th><th>Plural</th></tr>
+      <tr><td>Definido</td><td class="fr">le</td><td class="fr">la</td><td class="fr">les</td></tr>
+      <tr><td>Indefinido</td><td class="fr">un</td><td class="fr">une</td><td class="fr">des</td></tr>
+    </table>
+    <div class="gram-note">Igual ao português! Mas o gênero dos substantivos é diferente: <span class="fr">le problème</span> (masc.), <span class="fr">la solution</span> (fem.). Infelizmente precisa memorizar.</div>
+  `},
+  {title:'Negação — ne...pas',content:`
+    <table class="gram-table">
+      <tr><th>Português</th><th>Francês</th></tr>
+      <tr><td>Eu não falo</td><td><span class="fr">Je <strong>ne</strong> parle <strong>pas</strong></span></td></tr>
+      <tr><td>Ele não entende</td><td><span class="fr">Il <strong>ne</strong> comprend <strong>pas</strong></span></td></tr>
+      <tr><td>Não tenho</td><td><span class="fr">Je <strong>n'</strong>ai <strong>pas</strong></span></td></tr>
+    </table>
+    <div class="gram-note">Na fala informal, o <strong>ne</strong> quase sempre cai: "Je parle pas" em vez de "Je ne parle pas". Você vai ouvir muito isso!</div>
+  `},
+  {title:'Verbos essenciais — Présent',content:`
+    <table class="gram-table">
+      <tr><th>Pronome</th><th>être (ser/estar)</th><th>avoir (ter)</th><th>aller (ir)</th></tr>
+      <tr><td>je</td><td class="fr">suis</td><td class="fr">ai</td><td class="fr">vais</td></tr>
+      <tr><td>tu</td><td class="fr">es</td><td class="fr">as</td><td class="fr">vas</td></tr>
+      <tr><td>il/elle</td><td class="fr">est</td><td class="fr">a</td><td class="fr">va</td></tr>
+      <tr><td>nous</td><td class="fr">sommes</td><td class="fr">avons</td><td class="fr">allons</td></tr>
+      <tr><td>vous</td><td class="fr">êtes</td><td class="fr">avez</td><td class="fr">allez</td></tr>
+      <tr><td>ils/elles</td><td class="fr">sont</td><td class="fr">ont</td><td class="fr">vont</td></tr>
+    </table>
+    <div class="gram-note">Memorize esses três primeiro! São a base de tudo. <span class="fr">Je suis fatigué.</span> (Estou cansado.) <span class="fr">J'ai faim.</span> (Estou com fome.) <span class="fr">Je vais bien.</span> (Estou bem.)</div>
+  `},
+  {title:'Futuro Fácil — Futur Proche',content:`
+    <table class="gram-table">
+      <tr><th>Estrutura</th><th>Exemplo</th><th>Tradução</th></tr>
+      <tr><td><span class="fr">aller</span> + infinitivo</td><td><span class="fr">Je vais manger</span></td><td>Vou comer</td></tr>
+      <tr><td></td><td><span class="fr">Il va neiger</span></td><td>Vai nevar</td></tr>
+      <tr><td></td><td><span class="fr">On va y aller</span></td><td>A gente vai lá</td></tr>
+    </table>
+    <div class="gram-note">Muito mais fácil que o futuro simples! Igual ao português "vou + infinitivo". Use isso sempre no começo.</div>
+  `},
+  {title:'Passado — Passé Composé',content:`
+    <table class="gram-table">
+      <tr><th>Estrutura</th><th>Exemplo</th><th>Tradução</th></tr>
+      <tr><td><span class="fr">avoir</span> + particípio</td><td><span class="fr">J'ai mangé</span></td><td>Eu comi</td></tr>
+      <tr><td></td><td><span class="fr">Il a parlé</span></td><td>Ele falou</td></tr>
+      <tr><td><span class="fr">être</span> + particípio*</td><td><span class="fr">Je suis allé</span></td><td>Eu fui</td></tr>
+    </table>
+    <div class="gram-note">*Verbos de movimento e reflexivos usam <span class="fr">être</span>: aller, venir, partir, arriver, naître, mourir. Com <span class="fr">être</span>, o particípio concorda com o sujeito: <span class="fr">elle est allée</span> (ela foi).</div>
+  `},
+  {title:'Tu vs. Vous — Formal vs. Informal',content:`
+    <table class="gram-table">
+      <tr><th>Situação</th><th>Pronome</th><th>Exemplo</th></tr>
+      <tr><td>Amigos, família, crianças</td><td><span class="fr">tu</span></td><td><span class="fr">Tu veux du café?</span></td></tr>
+      <tr><td>Desconhecidos, superior, formal</td><td><span class="fr">vous</span></td><td><span class="fr">Vous voulez du café?</span></td></tr>
+      <tr><td>Grupo de pessoas</td><td><span class="fr">vous</span></td><td><span class="fr">Vous êtes prêts?</span></td></tr>
+    </table>
+    <div class="gram-note">No Québec, o "tu" informal é usado muito mais que na França. Mas ao conhecer alguém novo, sempre comece com "vous" por segurança.</div>
+  `},
+];
+
+const RESOURCES = [
+  {ico:'📱',title:'Duolingo',desc:'App gratuito com curso completo de francês. Gamificado, ideal para manter o hábito diário. Disponível em português.',tags:['free','app']},
+  {ico:'🎧',title:'Pimsleur Français',desc:'Foca 100% em pronúncia e conversação oral. Você ouve e repete com nativos. Ideal para o ouvido. Versão trial gratuita.',tags:['app','audio']},
+  {ico:'📻',title:'Radio-Canada (App)',desc:'Rádio pública canadense em francês. Podcasts, músicas e notícias em francês québécois autêntico. 100% gratuito.',tags:['free','audio','qc']},
+  {ico:'📺',title:'TV5MONDE',desc:'TV internacional em francês. YouTube com centenas de vídeos com legendas em francês. Nível intermediário em diante.',tags:['free','video']},
+  {ico:'🎬',title:'Easy French (YouTube)',desc:'Entrevistas na rua com legendas em FR e EN. Francês real, espontâneo. Canal: @EasyFrench. Grátis.',tags:['free','video']},
+  {ico:'🎙️',title:'Français Authentique',desc:'Podcast para quem quer falar como nativo. Foco em expressões e ritmo natural. Canal YouTube + podcast.',tags:['free','audio']},
+  {ico:'🃏',title:'Anki',desc:'Flashcards com repetição espaçada — o método mais eficiente para memorização. Baixe decks prontos de francês. Grátis.',tags:['free','app']},
+  {ico:'🗣️',title:'italki',desc:'Plataforma com tutores e professores de francês. Sessões de conversação a partir de US$10. Acelerador máximo.',tags:['app']},
+  {ico:'📱',title:'Tandem',desc:'App de intercâmbio linguístico. Conecta você com nativos de francês que querem aprender português. Gratuito.',tags:['free','app']},
+  {ico:'🏫',title:'CCNB — Nouveau-Brunswick',desc:'Collège Communautaire du Nouveau-Brunswick. Cursos presenciais e online de francês para adultos em NB. Verifique o site!',tags:['qc']},
+  {ico:'☕',title:'Coffee Break French',desc:'Podcast em inglês ensinando francês. Explicações claras do básico ao avançado. Ideal para o carro ou caminhada.',tags:['free','audio']},
+  {ico:'💻',title:'TV5MONDE Langue Française',desc:'Site tv5monde.com/langue-française com exercícios interativos, lições gratuitas e quizzes. Excelente recurso online.',tags:['free']},
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+
+var _state = {};
+try { _state = JSON.parse(localStorage.getItem('fr_state') || '{}'); } catch(e){}
+var _known = _state.known || {};
+var _exprSeen = _state.exprSeen || {};
+var _streak = _state.streak || 0;
+var _lastDay = _state.lastDay || '';
+var _curTheme = 0;
+var _curCard = 0;
+var _flipped = false;
+var _slow = false;
+var _ttsVoice = null;
+var _playing = null;
+
+function saveState(){
+  try {
+    localStorage.setItem('fr_state', JSON.stringify({
+      known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay
+    }));
+  } catch(e){}
+}
+
+// ─── TTS ────────────────────────────────────────────────────────────────────
+
+function initTTS(){
+  if(!('speechSynthesis' in window)) return;
+  function pickVoice(){
+    var vv = window.speechSynthesis.getVoices();
+    _ttsVoice = vv.find(function(v){ return v.lang==='fr-CA'; }) ||
+                vv.find(function(v){ return v.lang==='fr-FR'; }) ||
+                vv.find(function(v){ return v.lang.startsWith('fr'); }) || null;
+  }
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+
+function speak(text, btn){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  if(_playing && _playing !== btn) _playing.classList.remove('playing');
+  if(_playing === btn){
+    _playing = null;
+    if(btn) btn.classList.remove('playing');
+    return;
+  }
+  _playing = btn || null;
+  if(btn) btn.classList.add('playing');
+  var utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'fr-CA';
+  if(_ttsVoice) utt.voice = _ttsVoice;
+  utt.rate = _slow ? 0.65 : 1.0;
+  utt.onend = utt.onerror = function(){
+    if(_playing === btn){ _playing = null; if(btn) btn.classList.remove('playing'); }
+  };
+  window.speechSynthesis.speak(utt);
+}
+
+function toggleSpeed(clickedBtn){
+  _slow = !_slow;
+  document.querySelectorAll('.speed-toggle').forEach(function(b){
+    b.textContent = _slow ? '🐢 Lento' : '▶ Normal';
+    b.classList.toggle('active', _slow);
+  });
+}
+
+// ─── TABS ───────────────────────────────────────────────────────────────────
+
+function switchTab(id){
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  var s = document.getElementById('sec-'+id);
+  if(s) s.classList.add('active');
+  var tabs = document.querySelectorAll('.tab');
+  var map = {home:0, vocab:1, expr:2, pron:3, gram:4};
+  if(map[id]!=null) tabs[map[id]].classList.add('active');
+  updateStats();
+}
+
+// ─── HOME ───────────────────────────────────────────────────────────────────
+
+function loadDaily(){
+  var today = new Date().toISOString().slice(0,10);
+  var idx = (new Date().getDate() + new Date().getMonth()*7) % DAILY.length;
+  var d = DAILY[idx];
+  document.getElementById('d-fr').textContent = d.fr;
+  document.getElementById('d-ipa').textContent = d.ipa;
+  document.getElementById('d-pt').textContent = d.pt;
+  document.getElementById('d-ctx').textContent = d.ctx;
+  var dailyBtn = document.getElementById('daily-audio-btn');
+  if(dailyBtn) dailyBtn.onclick = function(ev){ ev.stopPropagation(); speak(d.fr, dailyBtn); };
+  // Streak
+  if(_lastDay !== today){
+    var yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    _streak = (_lastDay === yesterday) ? _streak + 1 : 1;
+    _lastDay = today;
+    saveState();
+  }
+}
+
+function updateStats(){
+  var knownCount = Object.values(_known).filter(Boolean).length;
+  var exprCount = Object.values(_exprSeen).filter(Boolean).length;
+  var total = 0;
+  THEMES.forEach(function(t){ total += t.words.length; });
+  var pct = total > 0 ? Math.round(knownCount/total*100) : 0;
+  document.getElementById('s-known').textContent = knownCount;
+  document.getElementById('s-expr').textContent = exprCount;
+  document.getElementById('s-streak').textContent = _streak;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+// ─── VOCABULARY ─────────────────────────────────────────────────────────────
+
+function buildThemes(){
+  var grid = document.getElementById('themes-grid');
+  THEMES.forEach(function(t, i){
+    var btn = document.createElement('button');
+    btn.className = 'theme-btn' + (i===0?' active':'');
+    btn.innerHTML = '<span class="theme-ico">'+t.ico+'</span><span class="theme-lbl">'+t.lbl+'</span>';
+    btn.onclick = function(){ selectTheme(i); };
+    grid.appendChild(btn);
+  });
+  showTheme(0);
+}
+
+function selectTheme(i){
+  _curTheme = i; _curCard = 0; _flipped = false;
+  document.querySelectorAll('.theme-btn').forEach(function(b,j){ b.classList.toggle('active', j===i); });
+  showTheme(i);
+}
+
+function showTheme(i){
+  var area = document.getElementById('fc-area');
+  area.style.display = 'block';
+  showCard();
+}
+
+function showCard(){
+  var theme = THEMES[_curTheme];
+  var total = theme.words.length;
+  if(_curCard >= total) _curCard = 0;
+  var w = theme.words[_curCard];
+  _flipped = false;
+  var fc = document.getElementById('fc');
+  fc.classList.remove('flipped');
+  document.getElementById('fc-fr').textContent = w.fr;
+  document.getElementById('fc-ipa').textContent = '[' + w.ipa + ']';
+  document.getElementById('fc-pt').textContent = w.pt;
+  document.getElementById('fc-ex').textContent = w.ex;
+  var id = _curTheme + '_' + _curCard;
+  var counter = document.getElementById('fc-counter');
+  counter.textContent = 'Palavra ' + (_curCard+1) + ' de ' + total + ((_known[id]) ? ' ✅' : '');
+  var fcBtn = document.getElementById('fc-audio-btn');
+  if(fcBtn){
+    if(_playing === fcBtn){ _playing = null; fcBtn.classList.remove('playing'); }
+    fcBtn.onclick = function(ev){ ev.stopPropagation(); speak(w.fr, fcBtn); };
+  }
+}
+
+function flipCard(){
+  _flipped = !_flipped;
+  document.getElementById('fc').classList.toggle('flipped', _flipped);
+}
+
+function markCard(knew){
+  var id = _curTheme + '_' + _curCard;
+  _known[id] = knew;
+  saveState();
+  nextCard();
+}
+
+function nextCard(){
+  _curCard = (_curCard + 1) % THEMES[_curTheme].words.length;
+  showCard();
+}
+
+// ─── EXPRESSIONS ────────────────────────────────────────────────────────────
+
+function buildExprs(){
+  var list = document.getElementById('expr-list');
+  var lbl = document.createElement('div');
+  lbl.className = 'sec-lbl';
+  lbl.textContent = EXPRS.length + ' expressões de nativos canadenses';
+  list.appendChild(lbl);
+  EXPRS.forEach(function(e, i){
+    var card = document.createElement('div');
+    card.className = 'exp-card';
+    var tagMap = {qc:'🍁 Canadense/Québécois',fr:'🇫🇷 Francês europeu',both:'🌍 Universal'};
+    var tagCls = {qc:'qc',fr:'fr',both:'both'};
+    card.innerHTML =
+      '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:2px">'+
+      '<div style="flex:1"><div class="exp-fr">'+e.fr+'</div>'+
+      (e.ipa?'<div class="exp-ipa">['+e.ipa+']</div>':'')+
+      '</div>'+
+      '<button class="btn-audio dark exp-audio-btn" aria-label="Ouvir">🔊</button>'+
+      '</div>'+
+      '<span class="exp-tag '+tagCls[e.tag]+'">'+tagMap[e.tag]+'</span>'+
+      '<div class="exp-pt">🇧🇷 '+e.pt+'</div>'+
+      '<div class="exp-ctx">'+e.ctx+'</div>';
+    var audioBtn = card.querySelector('.exp-audio-btn');
+    audioBtn.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      speak(e.fr, audioBtn);
+    });
+    card.onclick = function(){
+      _exprSeen[i] = true;
+      saveState();
+    };
+    list.appendChild(card);
+  });
+}
+
+// ─── PRONUNCIATION ──────────────────────────────────────────────────────────
+
+function buildSounds(){
+  var list = document.getElementById('sounds-list');
+  var lbl = document.createElement('div');
+  lbl.className = 'sec-lbl';
+  lbl.textContent = 'Sons que mudam do português para o francês';
+  list.appendChild(lbl);
+
+  SOUNDS.forEach(function(s){
+    var card = document.createElement('div');
+    card.className = 'sound-card';
+    card.innerHTML =
+      '<div class="sound-hdr"><div class="sound-symbol">'+s.sym+'</div>'+
+      (s.ipa?'<div class="sound-ipa">'+s.ipa+'</div>':'')+
+      '</div>'+
+      '<div class="sound-desc">'+s.desc+'</div>'+
+      (s.tip?'<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:8px;border-left:3px solid #fbbf24;padding-left:8px;line-height:1.5">'+s.tip+'</div>':'')+
+      '<div class="sound-exs" id="exs-placeholder"></div>';
+    var exsDiv = card.querySelector('#exs-placeholder');
+    exsDiv.removeAttribute('id');
+    s.exs.forEach(function(ex){
+      var frPart = ex.split('(')[0].trim().replace(/_/g,' ').trim();
+      var btn = document.createElement('button');
+      btn.className = 'sound-ex';
+      btn.style.cssText = 'cursor:pointer;border:none;font-family:inherit;background:#eff6ff;color:var(--blue);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px';
+      btn.title = 'Ouvir: ' + frPart;
+      btn.innerHTML = '<span>🔊</span><span>'+ex+'</span>';
+      btn.addEventListener('click', function(){ speak(frPart, null); });
+      exsDiv.appendChild(btn);
+    });
+    list.appendChild(card);
+  });
+
+  var fl = document.getElementById('false-list');
+  FALSE_COGNATES.forEach(function(f){
+    var card = document.createElement('div');
+    card.className = 'false-card';
+    card.innerHTML =
+      '<div class="false-fr">'+f.fr+'</div>'+
+      '<div class="false-row"><span>❌</span><span class="false-wrong">'+f.wrong+'</span></div>'+
+      '<div class="false-row"><span>✅</span><span class="false-right">'+f.right+'</span></div>';
+    fl.appendChild(card);
+  });
+}
+
+// ─── GRAMMAR + RESOURCES ────────────────────────────────────────────────────
+
+function buildGrammar(){
+  var list = document.getElementById('gram-list');
+  var lbl = document.createElement('div');
+  lbl.className = 'sec-lbl';
+  lbl.textContent = 'Gramática essencial — comparação com o português';
+  list.appendChild(lbl);
+  GRAMMAR.forEach(function(g){
+    var card = document.createElement('div');
+    card.className = 'gram-card';
+    card.innerHTML = '<div class="gram-title">'+g.title+'</div>'+g.content;
+    list.appendChild(card);
+  });
+  var rl = document.getElementById('res-list');
+  RESOURCES.forEach(function(r){
+    var card = document.createElement('div');
+    card.className = 'res-card';
+    var tagsHtml = r.tags.map(function(t){
+      var labels = {free:'Gratuito',app:'App',audio:'Áudio',video:'Vídeo',qc:'Canadense'};
+      return '<span class="res-tag '+t+'">'+labels[t]+'</span>';
+    }).join('');
+    card.innerHTML =
+      '<div class="res-ico">'+r.ico+'</div>'+
+      '<div><div class="res-title">'+r.title+'</div>'+
+      '<div class="res-desc">'+r.desc+'</div>'+
+      '<div class="res-tags">'+tagsHtml+'</div></div>';
+    rl.appendChild(card);
+  });
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+
+(function(){
+  initTTS();
+  loadDaily();
+  updateStats();
+  buildThemes();
+  buildExprs();
+  buildSounds();
+  buildGrammar();
+})();
+</script>
+</body>
+</html>
