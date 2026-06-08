@@ -607,6 +607,8 @@ function initFirebase(){
           refreshCardCounter();
         }
         _fbReady = true;
+        // Push all local data to Firebase immediately (syncs localStorage → Firebase on first connect)
+        _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay}).catch(function(){});
         _fbRef.on('value', function(snap){
           var d = snap.val();
           if(!d || !_fbReady) return;
