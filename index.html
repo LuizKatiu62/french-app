@@ -125,6 +125,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .res-tag.qc{background:#fff3e0;color:#c2410c}
 /* SECTION LABELS */
 .sec-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:14px 16px 6px}
+/* POLYGLOT CARDS */
+.poly-card{background:var(--card);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);margin:0 16px 12px;overflow:hidden}
+.poly-hdr{padding:14px 16px 10px;display:flex;align-items:flex-start;gap:12px}
+.poly-flag{font-size:32px;flex-shrink:0;margin-top:2px}
+.poly-name{font-size:15px;font-weight:900;color:var(--text)}
+.poly-langs{font-size:11px;color:var(--muted);margin-top:1px;font-weight:600}
+.poly-method-badge{display:inline-block;background:#eff6ff;color:var(--blue);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:800;margin-top:4px}
+.poly-body{padding:0 16px 14px}
+.poly-desc{font-size:13px;line-height:1.65;color:var(--text);margin-bottom:10px}
+.poly-tips{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.poly-tip{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text);line-height:1.45}
+.poly-tip::before{content:'→';color:var(--blue);font-weight:800;flex-shrink:0;margin-top:1px}
+.poly-quote{background:#f8fafc;border-left:3px solid #fbbf24;border-radius:0 8px 8px 0;padding:8px 12px;font-size:12px;font-style:italic;color:var(--muted);line-height:1.5}
+.principle-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:14px 16px;margin:0 16px 8px;display:flex;gap:12px;align-items:flex-start}
+.principle-ico{font-size:26px;flex-shrink:0;margin-top:2px}
+.principle-title{font-size:13px;font-weight:800;margin-bottom:3px}
+.principle-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.you-card{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-radius:16px;margin:0 16px 10px;padding:16px}
+.you-card-title{font-size:12px;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.you-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.5}
+.you-ico{font-size:20px;flex-shrink:0}
 /* LESSON CARD */
 .lesson-card{background:linear-gradient(135deg,#065f46,#059669);color:#fff;border-radius:20px;margin:16px 16px 12px;padding:20px}
 .lesson-task{display:flex;align-items:center;gap:12px;padding:11px 12px;background:rgba(255,255,255,.12);border-radius:12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s}
@@ -160,10 +181,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- TAB BAR -->
 <div class="tab-bar">
   <button class="tab active" onclick="switchTab('home')"><span class="tab-ico">🏠</span><span class="tab-lbl">Início</span></button>
-  <button class="tab" onclick="switchTab('vocab')"><span class="tab-ico">📚</span><span class="tab-lbl">Vocabulário</span></button>
+  <button class="tab" onclick="switchTab('vocab')"><span class="tab-ico">📚</span><span class="tab-lbl">Vocab</span></button>
   <button class="tab" onclick="switchTab('expr')"><span class="tab-ico">💬</span><span class="tab-lbl">Expressões</span></button>
   <button class="tab" onclick="switchTab('pron')"><span class="tab-ico">🔊</span><span class="tab-lbl">Pronúncia</span></button>
   <button class="tab" onclick="switchTab('gram')"><span class="tab-ico">📝</span><span class="tab-lbl">Gramática</span></button>
+  <button class="tab" onclick="switchTab('metodo')"><span class="tab-ico">🧠</span><span class="tab-lbl">Método</span></button>
 </div>
 
 <!-- ════ HOME ════ -->
@@ -318,6 +340,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="sec-lbl">⚠️ Falsos Cognatos — Cuidado!</div>
   <div id="false-list"></div>
+</div>
+
+<!-- ════ MÉTODO ════ -->
+<div id="sec-metodo" class="sec">
+  <div class="hdr">
+    <div class="hdr-title">🧠 Método</div>
+    <div class="hdr-sub">Como os poliglotas aprendem — adaptado para você</div>
+  </div>
+  <div id="metodo-list"></div>
 </div>
 
 <!-- ════ GRAMÁTICA ════ -->
@@ -576,6 +607,43 @@ const RESOURCES = [
   {ico:'💻',title:'TV5MONDE Langue Française',desc:'Site tv5monde.com/langue-française com exercícios interativos, lições gratuitas e quizzes. Excelente recurso online.',tags:['free']},
 ];
 
+const POLYGLOTS = [
+  {ico:'🇮🇹',name:'Luca Lampariello',langs:'Fala 13 idiomas',method:'Tradução Bidirecional',
+   desc:'Traduz textos do francês para o português, depois de volta ao francês sem olhar o original. Cada erro revela exatamente o que precisa aprender.',
+   tips:['Escreva 3 frases em francês hoje','Traduza para o português','Amanhã, traduza de volta sem olhar','Compare com o original — os erros são a lição'],
+   quote:'"A fluência vem da conexão emocional com o idioma, não da gramática."'},
+  {ico:'🇨🇦',name:'Steve Kaufmann',langs:'Fala 20+ idiomas · Canadense como você!',method:'Input Massivo — Ouça e Leia Muito',
+   desc:'Passa horas ouvindo e lendo em francês ANTES de falar. O cérebro absorve padrões naturalmente. Ele aprendeu português assim e hoje fala perfeitamente.',
+   tips:['Ouça Rádio-Canada 20 min/dia no carro','Leia legendas em francês ao assistir TV','Não foque em gramática no início','Use LingQ para salvar e revisar palavras novas'],
+   quote:'"Você não aprende um idioma. Você se acostuma a ele."'},
+  {ico:'🇮🇪',name:'Benny Lewis',langs:'Fala 8 idiomas · Fluent in 3 Months',method:'Fale Desde o Dia 1',
+   desc:'Começa a falar no primeiro dia, mesmo com erros. Cada erro é feedback gratuito. Diz que a vergonha é o maior inimigo do aprendizado de idiomas.',
+   tips:['Fale francês com qualquer quebecense que encontrar','Baixe o Tandem — troca linguística com nativos','Grave sua voz e compare com o áudio do app','Aceite erros: são o caminho, não o obstáculo'],
+   quote:'"O maior obstáculo no aprendizado de idiomas é a vergonha de errar."'},
+  {ico:'🇺🇸',name:'Gabriel Wyner',langs:'Fala 6 idiomas · Fluent Forever',method:'Pronúncia Primeiro + Anki',
+   desc:'Aprende os sons do idioma antes das palavras. Depois usa Anki com imagens (nunca tradução) para memorizar vocabulário em contexto real.',
+   tips:['Pratique os sons da aba Pronúncia todo dia','Use Anki com imagens, nunca traduções','Aprenda palavras em frases completas, nunca isoladas','Revise 20 cards por dia — consistência é tudo'],
+   quote:'"Pense diretamente em francês. Tradução mental é uma muleta que atrasa você."'},
+  {ico:'🇭🇺',name:'Kató Lomb',langs:'Falava 16 idiomas · Começou um novo aos 60 anos!',method:'Leitura Prazerosa Todo Dia',
+   desc:'Lia livros em idiomas que ainda mal conhecia. Acreditava que interesse + constância superam qualquer método ou talento nato.',
+   tips:['Leia notícias em francês no site Radio-Canada','Escolha temas que você já ama: esporte, natureza','Não traduza cada palavra — entenda o contexto','10 minutos todo dia valem mais que 2h no fim de semana'],
+   quote:'"Aprender um idioma após os 40 é o maior presente que você pode dar a si mesmo."'},
+  {ico:'🇬🇧',name:'Olly Richards',langs:'Fala 8 idiomas · StoryLearning',method:'Aprenda por Histórias',
+   desc:'Aprende vocabulário e gramática através de histórias que interessam, nunca de listas. O contexto emocional da história fixa as palavras na memória de longo prazo.',
+   tips:['Assista filmes franceses com legenda em francês (não inglês)','Easy French no YouTube — entrevistas reais nas ruas','Leia contos simples em francês do seu nível','TV5MONDE — histórias autênticas do mundo francófono'],
+   quote:'"Seu cérebro não memoriza listas de palavras. Ele memoriza histórias e emoções."'},
+];
+
+const PRINCIPLES = [
+  {ico:'🎯',title:'Consistência supera intensidade',desc:'20 minutos todo dia supera 3 horas no fim de semana. O cérebro consolida memória durante o sono. Estude todos os dias, mesmo que pouco.'},
+  {ico:'👂',title:'Input antes de output',desc:'Ouça e leia muito antes de tentar falar perfeitamente. A maioria dos poliglotas passa meses absorvendo o idioma antes de falar com fluidez.'},
+  {ico:'😤',title:'Abrace os erros',desc:'Cada erro é informação valiosa. Os melhores alunos cometem mais erros — porque tentam mais. Perfeccionismo paralisa o aprendizado.'},
+  {ico:'❤️',title:'Conexão emocional',desc:'Estude temas que você ama: corrida, natureza, viagens, culinária. Emoção + memória = aprendizado permanente. Conteúdo chato é esquecido.'},
+  {ico:'🔄',title:'Repetição espaçada',desc:'Revise uma palavra no dia 1, dia 3, dia 7, dia 14, dia 30. O esquecimento é parte do processo — revisar no momento certo é o segredo do Anki.'},
+  {ico:'🌍',title:'Imersão no seu próprio mundo',desc:'Mude o idioma do celular para francês. Ouça música francesa. Ponha post-its em francês pela casa. Todo contato conta, mesmo que pequeno.'},
+  {ico:'🗣️',title:'Fale com nativos cedo',desc:'Mesmo com 50 palavras você pode ter conversas reais. New Brunswick tem falantes nativos — cada conversa real vale 10 horas de estudo em casa.'},
+];
+
 const LESSONS = [
   {ico:'😌',title:'Revisão leve',tasks:[
     {lbl:'📚 Vocabulário',detail:'5 flashcards — qualquer tema que quiser',tab:'vocab'},
@@ -758,10 +826,11 @@ function switchTab(id){
   var s = document.getElementById('sec-'+id);
   if(s) s.classList.add('active');
   var tabs = document.querySelectorAll('.tab');
-  var map = {home:0, vocab:1, expr:2, pron:3, gram:4};
+  var map = {home:0, vocab:1, expr:2, pron:3, gram:4, metodo:5};
   if(map[id]!=null) tabs[map[id]].classList.add('active');
   updateStats();
   if(id==='home') buildLesson();
+  if(id==='metodo') buildMetodo();
 }
 
 // ─── HOME ───────────────────────────────────────────────────────────────────
@@ -976,6 +1045,75 @@ function buildGrammar(){
   });
 }
 
+// ─── MÉTODO ─────────────────────────────────────────────────────────────────
+
+function buildMetodo(){
+  var list = document.getElementById('metodo-list');
+  if(!list || list.children.length > 0) return;
+
+  // Your advantages card
+  var youCard = document.createElement('div');
+  youCard.className = 'you-card';
+  youCard.innerHTML =
+    '<div class="you-card-title">⚡ Suas Vantagens Únicas</div>'+
+    '<div class="you-item"><div class="you-ico">🇧🇷</div><div><strong>Português → Francês:</strong> ~1.500 palavras quase idênticas. Nation, culture, possible, important... você já sabe sem estudar.</div></div>'+
+    '<div class="you-item"><div class="you-ico">🇪🇸</div><div><strong>Espanhol:</strong> gênero dos substantivos, conjugação, artigos — tudo muito parecido com o francês. Enorme vantagem!</div></div>'+
+    '<div class="you-item"><div class="you-ico">🇨🇦</div><div><strong>New Brunswick:</strong> única província bilíngue. Francês em placas, TV, rádio e nas ruas. Imersão gratuita todo dia.</div></div>'+
+    '<div class="you-item"><div class="you-ico">🏃</div><div><strong>Disciplina de corredor:</strong> você já prova que consistência diária funciona. Aplique a mesma mentalidade aqui.</div></div>';
+  list.appendChild(youCard);
+
+  // Polyglots
+  var lbl1 = document.createElement('div');
+  lbl1.className = 'sec-lbl';
+  lbl1.textContent = 'Os poliglotas e seus métodos';
+  list.appendChild(lbl1);
+
+  POLYGLOTS.forEach(function(p){
+    var card = document.createElement('div');
+    card.className = 'poly-card';
+    var tipsHtml = p.tips.map(function(t){ return '<div class="poly-tip">'+t+'</div>'; }).join('');
+    card.innerHTML =
+      '<div class="poly-hdr">'+
+      '<div class="poly-flag">'+p.ico+'</div>'+
+      '<div>'+
+      '<div class="poly-name">'+p.name+'</div>'+
+      '<div class="poly-langs">'+p.langs+'</div>'+
+      '<span class="poly-method-badge">'+p.method+'</span>'+
+      '</div></div>'+
+      '<div class="poly-body">'+
+      '<div class="poly-desc">'+p.desc+'</div>'+
+      '<div class="poly-tips">'+tipsHtml+'</div>'+
+      '<div class="poly-quote">'+p.quote+'</div>'+
+      '</div>';
+    list.appendChild(card);
+  });
+
+  // Universal principles
+  var lbl2 = document.createElement('div');
+  lbl2.className = 'sec-lbl';
+  lbl2.textContent = '7 princípios que todos os poliglotas seguem';
+  list.appendChild(lbl2);
+
+  PRINCIPLES.forEach(function(p){
+    var card = document.createElement('div');
+    card.className = 'principle-card';
+    card.innerHTML =
+      '<div class="principle-ico">'+p.ico+'</div>'+
+      '<div>'+
+      '<div class="principle-title">'+p.title+'</div>'+
+      '<div class="principle-desc">'+p.desc+'</div>'+
+      '</div>';
+    list.appendChild(card);
+  });
+
+  // Final tip
+  var tip = document.createElement('div');
+  tip.className = 'tip-card';
+  tip.style.margin = '0 16px 24px';
+  tip.innerHTML = '<strong>💡 O que todos concordam:</strong> Não existe método perfeito. O melhor método é o que você vai usar todo dia. A consistência de 20 minutos diários durante 1 ano transforma qualquer adulto em um falante funcional de qualquer idioma.';
+  list.appendChild(tip);
+}
+
 // ─── LESSON OF THE DAY ──────────────────────────────────────────────────────
 
 function buildLesson(){
@@ -1059,6 +1197,7 @@ function checkTask(idx, tab){
   buildExprs();
   buildSounds();
   buildGrammar();
+  buildMetodo();
 })();
 </script>
 </body>
