@@ -779,31 +779,44 @@ function refreshCardCounter(){
 
 function initTTS(){
   if(!('speechSynthesis' in window)) return;
-  function pickVoice(){
+  // iOS doesn't fire voiceschanged — voices are loaded on demand
+  window.speechSynthesis.onvoiceschanged = function(){
     var vv = window.speechSynthesis.getVoices();
     _ttsVoice = vv.find(function(v){ return v.lang==='fr-CA'; }) ||
                 vv.find(function(v){ return v.lang==='fr-FR'; }) ||
                 vv.find(function(v){ return v.lang.startsWith('fr'); }) || null;
-  }
-  pickVoice();
-  window.speechSynthesis.onvoiceschanged = pickVoice;
+  };
 }
 
 function speak(text, btn){
   if(!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  if(_playing && _playing !== btn) _playing.classList.remove('playing');
+
+  // Re-fetch voices on every call — required on iOS Safari
+  var vv = window.speechSynthesis.getVoices();
+  if(vv.length){
+    _ttsVoice = vv.find(function(v){ return v.lang==='fr-CA'; }) ||
+                vv.find(function(v){ return v.lang==='fr-FR'; }) ||
+                vv.find(function(v){ return v.lang.startsWith('fr'); }) || null;
+  }
+
+  // Toggle off if same button tapped again
   if(_playing === btn){
+    window.speechSynthesis.cancel();
     _playing = null;
     if(btn) btn.classList.remove('playing');
     return;
   }
+
+  window.speechSynthesis.cancel();
+  if(_playing) _playing.classList.remove('playing');
   _playing = btn || null;
   if(btn) btn.classList.add('playing');
+
   var utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'fr-CA';
+  utt.lang = 'fr-FR'; // fr-FR é o mais suportado no iOS
   if(_ttsVoice) utt.voice = _ttsVoice;
   utt.rate = _slow ? 0.65 : 1.0;
+  utt.volume = 1.0;
   utt.onend = utt.onerror = function(){
     if(_playing === btn){ _playing = null; if(btn) btn.classList.remove('playing'); }
   };
