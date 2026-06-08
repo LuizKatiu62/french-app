@@ -659,10 +659,11 @@ function initFirebase(){
       _fbRef.once('value').then(function(snap){
         var d = snap.val();
         if(d){
-          if(d.known) Object.assign(_known, d.known);
-          if(d.exprSeen) Object.assign(_exprSeen, d.exprSeen);
+          // Merge: true sempre ganha — progresso nunca retrocede
+          if(d.known) Object.keys(d.known).forEach(function(k){ if(d.known[k]===true) _known[k]=true; else if(_known[k]!==true) _known[k]=d.known[k]; });
+          if(d.exprSeen) Object.keys(d.exprSeen).forEach(function(k){ if(d.exprSeen[k]) _exprSeen[k]=true; });
           if(d.streak && d.streak > _streak) _streak = d.streak;
-          if(d.lastDay) _lastDay = d.lastDay;
+          if(d.lastDay && d.lastDay > _lastDay) _lastDay = d.lastDay;
           if(d.lessonDone) Object.assign(_lessonDone, d.lessonDone);
           try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay,lessonDone:_lessonDone})); } catch(e){}
           updateStats();
@@ -677,8 +678,8 @@ function initFirebase(){
           var d = snap.val();
           if(!d || !_fbReady) return;
           var changed = false;
-          if(d.known){ Object.keys(d.known).forEach(function(k){ if(_known[k]!==d.known[k]){ _known[k]=d.known[k]; changed=true; } }); }
-          if(d.exprSeen){ Object.keys(d.exprSeen).forEach(function(k){ if(!_exprSeen[k]){ _exprSeen[k]=true; changed=true; } }); }
+          if(d.known){ Object.keys(d.known).forEach(function(k){ var v=(d.known[k]===true)?true:d.known[k]; if(_known[k]!==v&&(_known[k]!==true)){ _known[k]=v; changed=true; } }); }
+          if(d.exprSeen){ Object.keys(d.exprSeen).forEach(function(k){ if(d.exprSeen[k]&&!_exprSeen[k]){ _exprSeen[k]=true; changed=true; } }); }
           if(d.streak && d.streak > _streak){ _streak=d.streak; changed=true; }
           if(d.lessonDone){ Object.keys(d.lessonDone).forEach(function(k){ _lessonDone[k]=d.lessonDone[k]; }); }
           if(changed){
