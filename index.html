@@ -799,11 +799,11 @@ function speak(text, btn){
                 vv.find(function(v){ return v.lang.startsWith('fr'); }) || null;
   }
 
-  // Toggle off if same button tapped again
-  if(_playing === btn){
+  // Toggle off only when a real button is tapped twice
+  if(btn && _playing === btn){
     window.speechSynthesis.cancel();
     _playing = null;
-    if(btn) btn.classList.remove('playing');
+    btn.classList.remove('playing');
     return;
   }
 
