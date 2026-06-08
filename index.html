@@ -594,7 +594,7 @@ function initFirebase(){
     };
     var app = firebase.initializeApp(cfg, 'french');
     firebase.auth(app).signInAnonymously().then(function(){
-      _fbRef = firebase.database(app).ref('french-app/'+_FB_SEC+'/progress');
+      _fbRef = firebase.database(app).ref('gastos/'+_FB_SEC+'/progress');
       _fbRef.once('value').then(function(snap){
         var d = snap.val();
         if(d){
