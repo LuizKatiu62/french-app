@@ -125,6 +125,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .res-tag.qc{background:#fff3e0;color:#c2410c}
 /* SECTION LABELS */
 .sec-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:14px 16px 6px}
+/* LESSON CARD */
+.lesson-card{background:linear-gradient(135deg,#065f46,#059669);color:#fff;border-radius:20px;margin:16px 16px 12px;padding:20px}
+.lesson-task{display:flex;align-items:center;gap:12px;padding:11px 12px;background:rgba(255,255,255,.12);border-radius:12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s}
+.lesson-task.done{background:rgba(255,255,255,.25);text-decoration:none}
+.task-check{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all .2s}
+.task-check.done{background:#fff;border-color:#fff;color:#059669;font-weight:900}
+.task-info{flex:1}
+.task-lbl{font-size:13px;font-weight:800}
+.task-detail{font-size:11px;opacity:.72;margin-top:1px;line-height:1.4}
+.week-dots{display:flex;gap:4px;justify-content:center;margin-top:16px}
+.week-dot{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.wdc{width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin:0 auto}
+.wdc.done{background:#fff;color:#059669;border-color:#fff}
+.wdc.today{border-color:#fff;border-width:2.5px}
+.wdc.today.done{box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.wdl{font-size:9px;opacity:.6;font-weight:700;text-align:center}
+.lesson-congrats{text-align:center;padding:10px 0 2px;font-size:14px;font-weight:800;letter-spacing:.2px}
 /* AUDIO BUTTONS */
 .btn-audio{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);color:#fff;border-radius:50%;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;font-family:inherit;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .btn-audio:active{background:rgba(255,255,255,.35)}
@@ -156,6 +173,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="hdr-title">Mon Français</div>
     <div class="hdr-sub">Método pessoal — Luiz Silva</div>
   </div>
+
+  <!-- Lesson of the day -->
+  <div class="lesson-card" id="lesson-card"></div>
 
   <!-- Daily expression -->
   <div class="daily" id="daily-card">
@@ -555,6 +575,42 @@ const RESOURCES = [
   {ico:'💻',title:'TV5MONDE Langue Française',desc:'Site tv5monde.com/langue-française com exercícios interativos, lições gratuitas e quizzes. Excelente recurso online.',tags:['free']},
 ];
 
+const LESSONS = [
+  {ico:'😌',title:'Revisão leve',tasks:[
+    {lbl:'📚 Vocabulário',detail:'5 flashcards — qualquer tema que quiser',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Releia 2 expressões e ouça o áudio 🔊',tab:'expr'},
+  ]},
+  {ico:'🚀',title:'Novo começo',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Saudações — complete todos os flashcards',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Leia as 3 primeiras expressões com áudio 🔊',tab:'expr'},
+    {lbl:'🔊 Pronúncia',detail:'Pratique o R francês — ouça os exemplos',tab:'pron'},
+  ]},
+  {ico:'🍽️',title:'No restaurante',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Restaurante — complete todos os flashcards',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Leia as expressões 4, 5 e 6 com áudio 🔊',tab:'expr'},
+  ]},
+  {ico:'🛒',title:'Fazendo compras',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Compras — complete todos os flashcards',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Leia as expressões 7, 8 e 9 com áudio 🔊',tab:'expr'},
+    {lbl:'📝 Gramática',detail:'Leia: Artigos le, la, les, un, une',tab:'gram'},
+  ]},
+  {ico:'🏥',title:'Situações reais',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Saúde — complete todos os flashcards',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Leia as expressões 10, 11 e 12 com áudio 🔊',tab:'expr'},
+    {lbl:'🔊 Pronúncia',detail:'Vogais nasais AN, IN, ON — ouça os exemplos',tab:'pron'},
+  ]},
+  {ico:'🚌',title:'Movendo pela cidade',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Transporte — complete todos os flashcards',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Leia as expressões 13, 14 e 15 com áudio 🔊',tab:'expr'},
+    {lbl:'📝 Gramática',detail:'Leia: Negação ne...pas',tab:'gram'},
+  ]},
+  {ico:'⭐',title:'Revisão da semana',tasks:[
+    {lbl:'📚 Vocabulário',detail:'Revise temas onde marcou 😓 Revisar',tab:'vocab'},
+    {lbl:'💬 Expressões',detail:'Ouça o áudio de 5 expressões, repita em voz alta',tab:'expr'},
+    {lbl:'🔊 Pronúncia',detail:'Consoantes finais — pratique os exemplos',tab:'pron'},
+  ]},
+];
+
 // ─── STATE ──────────────────────────────────────────────────────────────────
 
 var _state = {};
@@ -566,6 +622,7 @@ var _lastDay = _state.lastDay || '';
 var _curTheme = 0;
 var _curCard = 0;
 var _flipped = false;
+var _lessonDone = _state.lessonDone || {};
 var _slow = false;
 var _ttsVoice = null;
 var _playing = null;
@@ -573,7 +630,7 @@ var _playing = null;
 function saveState(){
   try {
     localStorage.setItem('fr_state', JSON.stringify({
-      known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay
+      known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay, lessonDone:_lessonDone
     }));
   } catch(e){}
   pushToFirebase();
@@ -602,13 +659,13 @@ function initFirebase(){
           if(d.exprSeen) Object.assign(_exprSeen, d.exprSeen);
           if(d.streak && d.streak > _streak) _streak = d.streak;
           if(d.lastDay) _lastDay = d.lastDay;
-          try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay})); } catch(e){}
+          try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay,lessonDone:_lessonDone})); } catch(e){}
           updateStats();
           refreshCardCounter();
         }
         _fbReady = true;
         // Push all local data to Firebase immediately (syncs localStorage → Firebase on first connect)
-        _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay}).catch(function(){});
+        _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay, lessonDone:_lessonDone}).catch(function(){});
         _fbRef.on('value', function(snap){
           var d = snap.val();
           if(!d || !_fbReady) return;
@@ -616,10 +673,12 @@ function initFirebase(){
           if(d.known){ Object.keys(d.known).forEach(function(k){ if(_known[k]!==d.known[k]){ _known[k]=d.known[k]; changed=true; } }); }
           if(d.exprSeen){ Object.keys(d.exprSeen).forEach(function(k){ if(!_exprSeen[k]){ _exprSeen[k]=true; changed=true; } }); }
           if(d.streak && d.streak > _streak){ _streak=d.streak; changed=true; }
+          if(d.lessonDone){ Object.keys(d.lessonDone).forEach(function(k){ _lessonDone[k]=d.lessonDone[k]; }); changed=true; }
           if(changed){
-            try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay})); } catch(e){}
+            try { localStorage.setItem('fr_state', JSON.stringify({known:_known,exprSeen:_exprSeen,streak:_streak,lastDay:_lastDay,lessonDone:_lessonDone})); } catch(e){}
             updateStats();
             refreshCardCounter();
+            buildLesson();
           }
         });
       });
@@ -629,7 +688,7 @@ function initFirebase(){
 
 function pushToFirebase(){
   if(!_fbReady || !_fbRef) return;
-  _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay}).catch(function(){});
+  _fbRef.set({known:_known, exprSeen:_exprSeen, streak:_streak, lastDay:_lastDay, lessonDone:_lessonDone}).catch(function(){});
 }
 
 function refreshCardCounter(){
@@ -694,6 +753,7 @@ function switchTab(id){
   var map = {home:0, vocab:1, expr:2, pron:3, gram:4};
   if(map[id]!=null) tabs[map[id]].classList.add('active');
   updateStats();
+  if(id==='home') buildLesson();
 }
 
 // ─── HOME ───────────────────────────────────────────────────────────────────
@@ -908,12 +968,84 @@ function buildGrammar(){
   });
 }
 
+// ─── LESSON OF THE DAY ──────────────────────────────────────────────────────
+
+function buildLesson(){
+  var card = document.getElementById('lesson-card');
+  if(!card) return;
+  var today = new Date().toISOString().slice(0,10);
+  var dow = new Date().getDay();
+  var lesson = LESSONS[dow];
+  var done = _lessonDone[today] || [];
+  var allDone = lesson.tasks.length > 0 && done.filter(Boolean).length >= lesson.tasks.length;
+
+  // Week dots (Mon→Sun order, starting from last Monday)
+  var DAY_FR = ['Di','Lu','Ma','Me','Je','Ve','Sa'];
+  var weekHtml = '';
+  // Build a 7-day array starting from last Monday (or today if Mon)
+  var monOffset = (dow === 0) ? -6 : 1 - dow; // offset to get to Monday of this week
+  for(var i = 0; i < 7; i++){
+    var d = new Date();
+    d.setDate(d.getDate() + monOffset + i);
+    var ds = d.toISOString().slice(0,10);
+    var di = (d.getDay()); // 0=Sun..6=Sat
+    var dayTasks = _lessonDone[ds] || [];
+    var dayComplete = dayTasks.filter(Boolean).length >= LESSONS[di].tasks.length && LESSONS[di].tasks.length > 0;
+    var isToday = ds === today;
+    weekHtml += '<div class="week-dot">'+
+      '<div class="wdc'+(dayComplete?' done':'')+(isToday?' today':'')+'">'+
+      (dayComplete?'✓':DAY_FR[di])+
+      '</div>'+
+      '<div class="wdl">'+(isToday?'hoje':DAY_FR[di])+'</div>'+
+      '</div>';
+  }
+
+  // Tasks
+  var tasksHtml = '';
+  lesson.tasks.forEach(function(t, i){
+    var isDone = !!done[i];
+    tasksHtml +=
+      '<div class="lesson-task'+(isDone?' done':'')+'" onclick="checkTask('+i+',\''+t.tab+'\')">'+
+      '<div class="task-check'+(isDone?' done':'')+'">'+( isDone?'✓':'' )+'</div>'+
+      '<div class="task-info">'+
+      '<div class="task-lbl">'+t.lbl+'</div>'+
+      '<div class="task-detail">'+t.detail+'</div>'+
+      '</div>'+
+      '<span style="opacity:.4;font-size:18px;flex-shrink:0">›</span>'+
+      '</div>';
+  });
+
+  card.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'+
+    '<span style="font-size:28px">'+lesson.ico+'</span>'+
+    '<div>'+
+    '<div style="font-size:10px;font-weight:800;opacity:.7;text-transform:uppercase;letter-spacing:.6px">Lição de hoje</div>'+
+    '<div style="font-size:17px;font-weight:900">'+lesson.title+'</div>'+
+    '</div>'+
+    '</div>'+
+    tasksHtml+
+    (allDone?'<div class="lesson-congrats">🎉 Lição completa! Ótimo trabalho!</div>':'')+
+    '<div class="week-dots">'+weekHtml+'</div>';
+}
+
+function checkTask(idx, tab){
+  var today = new Date().toISOString().slice(0,10);
+  var dow = new Date().getDay();
+  var len = LESSONS[dow].tasks.length;
+  if(!_lessonDone[today]){ _lessonDone[today] = new Array(len).fill(false); }
+  _lessonDone[today][idx] = true;
+  saveState();
+  buildLesson();
+  setTimeout(function(){ switchTab(tab); }, 180);
+}
+
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 (function(){
   initTTS();
   initFirebase();
   loadDaily();
+  buildLesson();
   updateStats();
   buildThemes();
   buildExprs();
